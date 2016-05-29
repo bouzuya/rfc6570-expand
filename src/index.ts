@@ -1,3 +1,10 @@
+
+const u = (s: string): string => {
+  return encodeURIComponent(s).replace(/[!'()*]/g, (c) => {
+    return '%' + c.charCodeAt(0).toString(16);
+  });
+};
+
 const init = (template: string): { expand: (variables: any) => string; } => {
   const expand = (variables: any): string => {
     const result: string[] = [];
@@ -21,7 +28,7 @@ const init = (template: string): { expand: (variables: any) => string; } => {
       const expression = template.slice(openIndex, closeIndex + 1);
       const varName = expression.slice(1, expression.length - 1);
       const value = variables[varName];
-      result.push(value);
+      result.push(u(value));
 
       index = closeIndex + 1;
     }
