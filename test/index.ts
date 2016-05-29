@@ -1,4 +1,4 @@
-import assert from 'power-assert';
+import * as assert from 'power-assert';
 import { test } from 'eater/runner';
 import { init } from '../src/';
 
