@@ -13,8 +13,8 @@ test('literals', resolve => {
 
 test('expression', resolve => {
   const template = 'foo{bar}baz';
-  const variables = {};
-  const uri = 'foobarbaz';
+  const variables = { bar: 'BAR' };
+  const uri = 'fooBARbaz';
   const { expand } = init(template);
   assert(expand(variables) === uri);
   resolve();

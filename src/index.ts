@@ -18,8 +18,10 @@ const init = (template: string): { expand: (variables: any) => string; } => {
         throw new Error();
       }
 
-      const expression = template.slice(openIndex + 1, closeIndex);
-      result.push(expression);
+      const expression = template.slice(openIndex, closeIndex + 1);
+      const varName = expression.slice(1, expression.length - 1);
+      const value = variables[varName];
+      result.push(value);
 
       index = closeIndex + 1;
     }
