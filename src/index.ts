@@ -28,6 +28,18 @@ const parseOperator = (expression: string): Operator => {
   return operator ? operator : { key: null, first: '', allow: u };
 };
 
+// s = '{...}'
+const expression = (s: string, variables: any): string => {
+  const { key, first, allow } = parseOperator(s);
+  const varName = s.slice((key ? 2 : 1), s.length - 1);
+  const value = variables[varName];
+  return first + allow(value);
+};
+
+const literals = (s: string): string => {
+  return s;
+};
+
 const init = (template: string): { expand: (variables: any) => string; } => {
   const expand = (variables: any): string => {
     const result: string[] = [];
@@ -35,12 +47,10 @@ const init = (template: string): { expand: (variables: any) => string; } => {
     while (true) {
       const openIndex = template.indexOf('{', index);
       if (openIndex < 0) {
-        const literal = template.slice(index);
-        result.push(literal);
+        result.push(literals(template.slice(index)));
         break;
       }
-      const literal = template.slice(index, openIndex);
-      result.push(literal);
+      result.push(literals(template.slice(index, openIndex)));
 
       const closeIndex = template.indexOf('}', openIndex + 1);
       if (closeIndex < 0) {
@@ -48,11 +58,12 @@ const init = (template: string): { expand: (variables: any) => string; } => {
         throw new Error();
       }
 
-      const expression = template.slice(openIndex, closeIndex + 1);
-      const { key, first, allow } = parseOperator(expression);
-      const varName = expression.slice((key ? 2 : 1), expression.length - 1);
-      const value = variables[varName];
-      result.push(first + allow(value));
+      result.push(
+        expression(
+          template.slice(openIndex, closeIndex + 1),
+          variables
+        )
+      );
 
       index = closeIndex + 1;
     }
