@@ -2,10 +2,19 @@ import * as assert from 'power-assert';
 import { test } from 'eater/runner';
 import { init } from '../src/';
 
-test('test', resolve => {
+test('literals', resolve => {
   const template = 'foo';
   const variables = {};
   const uri = 'foo';
+  const { expand } = init(template);
+  assert(expand(variables) === uri);
+  resolve();
+});
+
+test('expression', resolve => {
+  const template = 'foo{bar}baz';
+  const variables = {};
+  const uri = 'foobarbaz';
   const { expand } = init(template);
   assert(expand(variables) === uri);
   resolve();
