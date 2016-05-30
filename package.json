@@ -35,7 +35,7 @@
   },
   "scripts": {
     "build": "tsc",
-    "prepublish": "npm run build",
+    "prepublish": "typings install && npm run build",
     "test": "eater",
     "watch": "parallelshell 'npm run build -- --watch' 'npm run watch-test'",
     "watch-test": "watch --wait 2 'npm test' '.tmp/test/'"
