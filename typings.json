@@ -3,6 +3,7 @@
   "dependencies": {},
   "globalDevDependencies": {
     "empower": "registry:dt/empower#0.0.0+20160317120654",
+    "node": "registry:dt/node#6.0.0+20160524002506",
     "power-assert": "registry:dt/power-assert#0.0.0+20160316155526",
     "power-assert-formatter": "registry:dt/power-assert-formatter#0.0.0+20160317120654"
   }
