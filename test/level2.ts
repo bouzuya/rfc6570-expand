@@ -1,24 +1,15 @@
 import * as assert from 'power-assert';
 import { test } from 'eater/runner';
 import { init } from '../src/';
+import { testCases } from '../test/';
 
-test('level 2 examples', resolve => {
-  const variables = {
-    'var': 'value',
-    'hello': 'Hello World!',
-    'path': '/foo/bar'
-  };
-  const testCases = [
-    ['{+var}', 'value'],
-    ['{+hello}', 'Hello%20World!'],
-    ['{+path}/here', '/foo/bar/here'],
-    ['here?ref={+path}', 'here?ref=/foo/bar'],
-    ['X{#var}', 'X#value'],
-    ['X{#hello}', 'X#Hello%20World!']
-  ];
-  testCases.forEach(([template, uri]) => {
+const tests = testCases('spec-examples').filter(({ level }) => level === 2);
+tests.forEach(testCase => {
+  const { level, section, template, uris, variables } = testCase;
+  test(`${section} - ${level} - ${template}`, resolve => {
     const { expand } = init(template);
-    assert(expand(variables) === uri);
+    const uri = expand(variables);
+    assert(uris.some(u => u === uri), `${uri} / ${uris}`);
+    resolve();
   });
-  resolve();
 });
