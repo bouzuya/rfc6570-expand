@@ -35,6 +35,7 @@
   },
   "scripts": {
     "build": "tsc",
+    "clean": "rm -rf .tmp/",
     "prepublish": "typings install && npm run build",
     "test": "eater",
     "watch": "parallelshell 'npm run build -- --watch' 'npm run watch-test'",
