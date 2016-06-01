@@ -82,7 +82,51 @@ const expressionParser = (): (s: string) => {
       varSpecs
     };
   };
-}
+};
+
+const varSpecToString = (
+  // operator
+  allow: (s: string) => string,
+  ifemp: string,
+  named: boolean,
+  sep: string,
+  // varspec
+  varName: string,
+  explode: boolean,
+  maxLength: number,
+  // variables
+  value: any,
+  isEmpty: boolean
+): string => {
+  return (explode
+    ? (
+      Array.isArray(value)
+        ? value.map((v: any) => {
+          return (named ? allow(varName) + (isEmpty ? ifemp : '=') : '') +
+            allow(v);
+        }).join(sep)
+        : (
+          typeof value === 'string'
+            ? '' // invalid
+            : Object.keys(value).map(k => {
+              return allow(k) + (isEmpty ? ifemp : '=') +
+                allow(value[k]);
+            }).join(sep))
+    )
+    : (
+      (named ? allow(varName) + (isEmpty ? ifemp : '=') : '') +
+      (Array.isArray(value)
+        ? value.map(allow).join(',')
+        : (
+          typeof value === 'string'
+            ? allow(
+              typeof maxLength === 'undefined'
+                ? value
+                : value.substring(0, maxLength))
+            : Object.keys(value).map(k => {
+              return allow(k) + ',' + allow(value[k]);
+            }).join(',')))));
+};
 
 // s = '{...}'
 const expression = (s: string, variables: any): string => {
@@ -94,35 +138,11 @@ const expression = (s: string, variables: any): string => {
     const isDefined = typeof value !== 'undefined' && value !== null;
     const isEmpty = !isDefined || value.length === 0;
     const firstOrSep = (isDefined ? (isFirst ? first : sep) : '');
-    return firstOrSep +
-      (explode
-        ? (
-          Array.isArray(value)
-            ? value.map((v: any) => {
-              return (named ? allow(varName) + (isEmpty ? ifemp : '=') : '') +
-                allow(v);
-            }).join(sep)
-            : (
-              typeof value === 'string'
-                ? '' // invalid
-                : Object.keys(value).map(k => {
-                  return allow(k) + (isEmpty ? ifemp : '=') +
-                    allow(value[k]);
-                }).join(sep))
-        )
-        : (
-          (named ? allow(varName) + (isEmpty ? ifemp : '=') : '') +
-          (Array.isArray(value)
-            ? value.map(allow).join(',')
-            : (
-              typeof value === 'string'
-                ? allow(
-                  typeof maxLength === 'undefined'
-                    ? value
-                    : value.substring(0, maxLength))
-                : Object.keys(value).map(k => {
-                  return allow(k) + ',' + allow(value[k]);
-                }).join(',')))));
+    return firstOrSep + varSpecToString(
+      allow, ifemp, named, sep,
+      varName, explode, maxLength,
+      value, isEmpty
+    );
   }).join('');
 };
 
