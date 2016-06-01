@@ -18,7 +18,7 @@
     "./test/level2.ts",
     "./test/level3.ts",
     "./test/level4.ts",
-    "./test/spec-examples.ts",
+    "./test/section3-2-1.ts",
     "./typings.d.ts",
     "./typings/index.d.ts"
   ]
