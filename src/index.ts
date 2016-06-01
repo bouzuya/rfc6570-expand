@@ -34,18 +34,52 @@ const parseOperator = (expression: string): Operator => {
   return operator ? operator : defaultOperator;
 };
 
+type VarSpec = {
+  varName: string;
+  maxLength?: number;
+  explode: boolean;
+};
+
+const compileVarSpecPattern = (): RegExp => {
+  const varChar = '(?:[A-Za-z0-9_]|%[A-Fa-f0-9][A-Fa-f0-9])';
+  const varName = `(${varChar}(?:\.?${varChar})*?)`;
+  const prefix = ':([1-9][0-9]{0,3})';
+  const explode = '(\\*)';
+  const modifierLevel4 = `${prefix}|${explode}`;
+  const varSpecPattern = new RegExp(`^${varName}(?:${modifierLevel4})?$`);
+  return varSpecPattern;
+};
+
+const parseVarSpec = (p: RegExp, s: string): VarSpec => {
+  const match = s.match(p);
+  if (!match) throw new Error('invalid varspec');
+  const varName = match[1];
+  const maxLength = typeof match[2] === 'undefined'
+    ? undefined : parseInt(match[2], 10);
+  const explode = !!match[3];
+  return { varName, maxLength, explode };
+};
+
+const varSpecParser = (): (s: string) => VarSpec => {
+  const p = compileVarSpecPattern();
+  return (s: string) => parseVarSpec(p, s);
+};
+
 // s = '{...}'
 const expression = (s: string, variables: any): string => {
   const { key, first, sep, named, ifemp, allow } = parseOperator(s);
   const hasOperator = !!key;
-  const varNames = s.slice((hasOperator ? 2 : 1), s.length - 1).split(',');
-  return varNames.map((varName, index) => {
+  const parser = varSpecParser();
+  const varSpecs = s.slice((hasOperator ? 2 : 1), s.length - 1).split(',');
+  return varSpecs.map(parser).map(({ varName, maxLength, explode }, index) => {
     const value = variables[varName];
     const isDefined = typeof value !== 'undefined' && value !== null;
     const isEmpty = !isDefined || value.length === 0;
+    const prefixed = typeof maxLength === 'undefined'
+      ? value : value.substring(0, maxLength);
     return (isDefined ? (index === 0 ? first : sep) : '') +
       (named ? allow(varName) + (isEmpty ? ifemp : '=') : '') +
-      allow(value);
+      allow(prefixed);
   }).join('');
 };
 
