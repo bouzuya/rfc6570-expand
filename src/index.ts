@@ -39,13 +39,14 @@ const expression = (s: string, variables: any): string => {
   const { key, first, sep, named, ifemp, allow } = parseOperator(s);
   const hasOperator = !!key;
   const varNames = s.slice((hasOperator ? 2 : 1), s.length - 1).split(',');
-  return first + varNames.map(varName => {
+  return varNames.map((varName, index) => {
     const value = variables[varName];
-    const isEmpty = typeof value === 'undefined' ||
-      value === null ||
-      value.length === 0;
-    return (named ? allow(varName) + (isEmpty ? ifemp : '=') : '') + allow(value);
-  }).filter(s => s.length > 0).join(sep);
+    const isDefined = typeof value !== 'undefined' && value !== null;
+    const isEmpty = !isDefined || value.length === 0;
+    return (isDefined ? (index === 0 ? first : sep) : '') +
+      (named ? allow(varName) + (isEmpty ? ifemp : '=') : '') +
+      allow(value);
+  }).join('');
 };
 
 const literals = (s: string): string => {
