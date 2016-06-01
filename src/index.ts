@@ -75,11 +75,41 @@ const expression = (s: string, variables: any): string => {
     const value = variables[varName];
     const isDefined = typeof value !== 'undefined' && value !== null;
     const isEmpty = !isDefined || value.length === 0;
-    const prefixed = typeof maxLength === 'undefined'
-      ? value : value.substring(0, maxLength);
-    return (isDefined ? (index === 0 ? first : sep) : '') +
-      (named ? allow(varName) + (isEmpty ? ifemp : '=') : '') +
-      allow(prefixed);
+    const firstOrSep = (isDefined ? (index === 0 ? first : sep) : '');
+    if (explode) {
+      if (Array.isArray(value)) {
+        return firstOrSep +
+          value.map((v: any) => {
+            return (named ? allow(varName) + (isEmpty ? ifemp : '=') : '') +
+              allow(v);
+          }).join(sep);
+      } else {
+        // Object only
+        return firstOrSep +
+          Object.keys(value).map(k => {
+            return allow(k) + (isEmpty ? ifemp : '=') +
+              allow(value[k]);
+          }).join(sep);
+      }
+    } else {
+      if (Array.isArray(value)) {
+        return firstOrSep +
+          (named ? allow(varName) + (isEmpty ? ifemp : '=') : '') +
+          value.map(allow).join(',');
+      } else if (typeof value === 'string') {
+        const prefixed = typeof maxLength === 'undefined'
+          ? value : value.substring(0, maxLength);
+        return firstOrSep +
+          (named ? allow(varName) + (isEmpty ? ifemp : '=') : '') +
+          allow(prefixed);
+      } else {
+        return firstOrSep +
+          (named ? allow(varName) + (isEmpty ? ifemp : '=') : '') +
+          Object.keys(value).map(k => {
+            return allow(k) + ',' + allow(value[k]);
+          }).join(',');
+      }
+    }
   }).join('');
 };
 
