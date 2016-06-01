@@ -65,13 +65,30 @@ const varSpecParser = (): (s: string) => VarSpec => {
   return (s: string) => parseVarSpec(p, s);
 };
 
+const expressionParser = (): (s: string) => {
+  operator: Operator;
+  varSpecs: VarSpec[];
+} => {
+  const parser = varSpecParser();
+  return s => {
+    const operator = parseOperator(s);
+    const hasOperator = !!operator.key;
+    const varSpecs = s
+      .slice((hasOperator ? 2 : 1), s.length - 1)
+      .split(',')
+      .map(parser);
+    return {
+      operator,
+      varSpecs
+    };
+  };
+}
+
 // s = '{...}'
 const expression = (s: string, variables: any): string => {
-  const { key, first, sep, named, ifemp, allow } = parseOperator(s);
-  const hasOperator = !!key;
-  const parser = varSpecParser();
-  const varSpecs = s.slice((hasOperator ? 2 : 1), s.length - 1).split(',');
-  return varSpecs.map(parser).map(({ varName, maxLength, explode }, index) => {
+  const parser = expressionParser();
+  const { operator: { allow, first, ifemp, named, sep }, varSpecs } = parser(s);
+  return varSpecs.map(({ varName, maxLength, explode }, index) => {
     const value = variables[varName];
     const isDefined = typeof value !== 'undefined' && value !== null;
     const isEmpty = !isDefined || value.length === 0;
