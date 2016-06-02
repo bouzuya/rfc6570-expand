@@ -132,18 +132,28 @@ const varSpecToString = (
 const expression = (s: string, variables: any): string => {
   const parser = expressionParser();
   const { operator: { allow, first, ifemp, named, sep }, varSpecs } = parser(s);
-  return varSpecs.map(({ varName, maxLength, explode }, index) => {
-    const isFirst = index === 0;
-    const value = variables[varName];
-    const isDefined = typeof value !== 'undefined' && value !== null;
-    const isEmpty = !isDefined || value.length === 0;
-    const firstOrSep = (isDefined ? (isFirst ? first : sep) : '');
-    return firstOrSep + varSpecToString(
-      allow, ifemp, named, sep,
-      varName, explode, maxLength,
-      value, isEmpty
-    );
-  }).join('');
+  return varSpecs
+    .map(varSpec => {
+      const { varName } = varSpec;
+      const value = variables[varName];
+      const isDefined = typeof value !== 'undefined' && value !== null;
+      return { isDefined, value, varSpec };
+    })
+    .filter(({ isDefined }) => isDefined)
+    .map(({
+      isDefined,
+      value,
+      varSpec: { varName, maxLength, explode },
+    }, index) => {
+      const isFirst = index === 0;
+      const isEmpty = !isDefined || value.length === 0;
+      const firstOrSep = (isFirst ? first : sep);
+      return firstOrSep + varSpecToString(
+        allow, ifemp, named, sep,
+        varName, explode, maxLength,
+        value, isEmpty
+      );
+    }).join('');
 };
 
 const literals = (s: string): string => {
