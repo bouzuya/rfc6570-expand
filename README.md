@@ -1,5 +1,7 @@
 # rfc6570-expand
 
+A template processor for RFC 6570 URI Template.
+
 [RFC 6570 - URI Template](https://tools.ietf.org/html/rfc6570).
 
 ## Badges

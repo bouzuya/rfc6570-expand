@@ -1,6 +1,6 @@
 {
   "name": "rfc6570-expand",
-  "description": "rfc6570 expand",
+  "description": "A template processor for RFC 6570 URI Template",
   "version": "0.0.0",
   "author": {
     "name": "bouzuya",
