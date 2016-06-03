@@ -21,6 +21,10 @@ const isArray = (variable: Variable): variable is string[] => {
   return Array.isArray(variable) && !Array.isArray(variable[0]);
 };
 
+const isDefined = (variable: Variable): boolean => {
+  return typeof variable !== 'undefined';
+};
+
 const isObject = (variable: Variable): variable is [string, string][] => {
   return Array.isArray(variable) && Array.isArray(variable[0]);
 };
@@ -185,17 +189,15 @@ const expression = (s: string, variables: any): string => {
     .map(varSpec => {
       const { varName } = varSpec;
       const value = variables[varName];
-      const isDefined = typeof value !== 'undefined' && value !== null;
-      return { isDefined, value, varSpec };
+      return { value, varSpec };
     })
-    .filter(({ isDefined }) => isDefined)
+    .filter(({ value }) => isDefined(value))
     .map(({
-      isDefined,
       value,
       varSpec: { varName, maxLength, explode },
     }, index) => {
       const isFirst = index === 0;
-      const isEmpty = !isDefined || value.length === 0;
+      const isEmpty = !isDefined(value) || value.length === 0;
       const firstOrSep = (isFirst ? first : sep);
       return firstOrSep + varSpecToString(
         allow, ifemp, named, sep,
