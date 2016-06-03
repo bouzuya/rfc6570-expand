@@ -112,18 +112,18 @@ const varSpecToString = (
     ? (
       isArray(value)
         ? value.map((v: any) => {
-          return (named ? allow(varName) + (isEmpty ? ifemp : '=') : '') +
+          return (named ? varName + (isEmpty ? ifemp : '=') : '') +
             allow(v);
         }).join(sep)
         : (
           isString(value)
-            ? '' // invalid
+            ? allow(value) // invalid
             : value.map(([k, v]) => {
               return allow(k) + (isEmpty ? ifemp : '=') + allow(v);
             }).join(sep))
     )
     : (
-      (named ? allow(varName) + (isEmpty ? ifemp : '=') : '') +
+      (named ? varName + (isEmpty ? ifemp : '=') : '') +
       (isArray(value)
         ? value.map(allow).join(',')
         : (
