@@ -16,6 +16,7 @@
     "./src/index.ts",
     "./test/extended1.ts",
     "./test/extended2.ts",
+    "./test/extended3.ts",
     "./test/level1.ts",
     "./test/level2.ts",
     "./test/level3.ts",
