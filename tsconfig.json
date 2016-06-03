@@ -26,6 +26,7 @@
     "./test/section3-2-6.ts",
     "./test/section3-2-7.ts",
     "./test/section3-2-8.ts",
+    "./test/section3-2-9.ts",
     "./typings.d.ts",
     "./typings/index.d.ts"
   ]
