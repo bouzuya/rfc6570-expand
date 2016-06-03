@@ -1,4 +1,5 @@
+/*.log
 /.tmp/
+/lib/
 /node_modules/
 /typings/
-/*.log

@@ -25,20 +25,24 @@
       "./scripts/enable-power-assert.js"
     ]
   },
+  "files": [
+    "lib/"
+  ],
   "homepage": "https://github.com/bouzuya/rfc6570-expand",
   "keywords": [],
   "license": "MIT",
-  "main": "index.js",
+  "main": "lib/index.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/bouzuya/rfc6570-expand.git"
   },
   "scripts": {
-    "build": "tsc",
-    "clean": "rm -rf .tmp/",
+    "build": "tsc && ([ -d lib/ ] || mkdir -p lib/) && cp .tmp/src/* lib/",
+    "clean": "rm -rf .tmp/ lib/",
     "prepublish": "typings install && npm run build",
     "test": "eater",
     "watch": "parallelshell 'npm run build -- --watch' 'npm run watch-test'",
     "watch-test": "watch --wait 2 'npm test' '.tmp/test/'"
-  }
+  },
+  "typings": "lib/index.d.ts"
 }
