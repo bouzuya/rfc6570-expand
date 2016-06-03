@@ -147,13 +147,16 @@ const expression = (s: string, variables: Variables): string => {
       const value = variables[varName];
       return { value, varSpec };
     })
-    .filter(({ value }) => isDefined(value))
+    .filter(({ value }) => {
+      return isDefined(value) &&
+        !(value.length === 0 && (isArray(value) || isObject(value)));
+    })
     .map(({
       value,
       varSpec: { varName, maxLength, explode },
     }, index) => {
       const isFirst = index === 0;
-      const isEmpty = !isDefined(value) || value.length === 0;
+      const isEmpty = value.length === 0;
       const firstOrSep = (isFirst ? first : sep);
       return firstOrSep + varSpecToString(
         allow, ifemp, named, sep,
