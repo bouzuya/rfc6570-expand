@@ -17,6 +17,14 @@ const ur = (s: string): string => {
   return encodeURI(s).replace(/%5B/g, '[').replace(/%5D/g, ']');
 };
 
+const isArray = (variable: Variable): variable is string[] => {
+  return Array.isArray(variable) && !Array.isArray(variable[0]);
+};
+
+const isObject = (variable: Variable): variable is [string, string][] => {
+  return Array.isArray(variable) && Array.isArray(variable[0]);
+};
+
 const parseOperator = (expression: string): Operator => {
   const defaultOperator: Operator = {
     key: null, first: '', sep: ',', named: false, ifemp: '', allow: u
@@ -95,12 +103,12 @@ const varSpecToString = (
   explode: boolean,
   maxLength: number,
   // variables
-  value: any,
+  value: Variable,
   isEmpty: boolean
 ): string => {
   return (explode
     ? (
-      Array.isArray(value)
+      isArray(value)
         ? value.map((v: any) => {
           return (named ? allow(varName) + (isEmpty ? ifemp : '=') : '') +
             allow(v);
@@ -108,14 +116,13 @@ const varSpecToString = (
         : (
           typeof value === 'string'
             ? '' // invalid
-            : Object.keys(value).map(k => {
-              return allow(k) + (isEmpty ? ifemp : '=') +
-                allow(value[k]);
+            : value.map(([k, v]) => {
+              return allow(k) + (isEmpty ? ifemp : '=') + allow(v);
             }).join(sep))
     )
     : (
       (named ? allow(varName) + (isEmpty ? ifemp : '=') : '') +
-      (Array.isArray(value)
+      (isArray(value)
         ? value.map(allow).join(',')
         : (
           typeof value === 'string'
@@ -123,8 +130,8 @@ const varSpecToString = (
               typeof maxLength === 'undefined'
                 ? value
                 : value.substring(0, maxLength))
-            : Object.keys(value).map(k => {
-              return allow(k) + ',' + allow(value[k]);
+            : value.map(([k, v]) => {
+              return allow(k) + ',' + allow(v);
             }).join(',')))));
 };
 
