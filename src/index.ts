@@ -29,6 +29,10 @@ const isObject = (variable: Variable): variable is [string, string][] => {
   return Array.isArray(variable) && Array.isArray(variable[0]);
 };
 
+const isString = (variable: Variable): variable is string => {
+  return typeof variable === 'string';
+};
+
 const parseOperator = (expression: string): Operator => {
   const defaultOperator: Operator = {
     key: null, first: '', sep: ',', named: false, ifemp: '', allow: u
@@ -118,7 +122,7 @@ const varSpecToString = (
             allow(v);
         }).join(sep)
         : (
-          typeof value === 'string'
+          isString(value)
             ? '' // invalid
             : value.map(([k, v]) => {
               return allow(k) + (isEmpty ? ifemp : '=') + allow(v);
@@ -129,7 +133,7 @@ const varSpecToString = (
       (isArray(value)
         ? value.map(allow).join(',')
         : (
-          typeof value === 'string'
+          isString(value)
             ? allow(
               typeof maxLength === 'undefined'
                 ? value
@@ -182,7 +186,7 @@ const normalizeVariables = (variables: { [key: string]: any; }): Variables => {
 };
 
 // s = '{...}'
-const expression = (s: string, variables: any): string => {
+const expression = (s: string, variables: Variables): string => {
   const parser = expressionParser();
   const { operator: { allow, first, ifemp, named, sep }, varSpecs } = parser(s);
   return varSpecs
