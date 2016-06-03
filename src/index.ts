@@ -52,7 +52,7 @@ type VarSpec = {
 
 const compileVarSpecPattern = (): RegExp => {
   const varChar = '(?:[A-Za-z0-9_]|%[A-Fa-f0-9][A-Fa-f0-9])';
-  const varName = `(${varChar}(?:\.?${varChar})*?)`;
+  const varName = `(${varChar}(?:\\.?${varChar})*?)`;
   const prefix = ':([1-9][0-9]{0,3})';
   const explode = '(\\*)';
   const modifierLevel4 = `${prefix}|${explode}`;
@@ -108,10 +108,18 @@ const varSpecToString = (
   value: Variable,
   isEmpty: boolean
 ): string => {
+  if (typeof maxLength !== 'undefined') {
+    if (isString(value)) {
+      return (named ? varName + (isEmpty ? ifemp : '=') : '') +
+        allow(value.substring(0, maxLength));
+    } else {
+      throw new Error();
+    }
+  }
   return (explode
     ? (
       isArray(value)
-        ? value.map((v: any) => {
+        ? value.map(v => {
           return (named ? varName + (isEmpty ? ifemp : '=') : '') +
             allow(v);
         }).join(sep)
@@ -128,10 +136,7 @@ const varSpecToString = (
         ? value.map(allow).join(',')
         : (
           isString(value)
-            ? allow(
-              typeof maxLength === 'undefined'
-                ? value
-                : value.substring(0, maxLength))
+            ? allow(value)
             : value.map(([k, v]) => {
               return allow(k) + ',' + allow(v);
             }).join(',')))));
@@ -167,6 +172,10 @@ const expression = (s: string, variables: Variables): string => {
 };
 
 const literals = (s: string): string => {
+  const p = '^(?:[^\\cA-\\cZ"\'<>\\\\^`{|}]|%(?![A-Fa-f0-9][A-Fa-f0-9]))*$';
+  if (!s.match(new RegExp(p))) {
+    throw new Error();
+  }
   return s;
 };
 

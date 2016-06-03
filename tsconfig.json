@@ -22,6 +22,7 @@
     "./test/level2.ts",
     "./test/level3.ts",
     "./test/level4.ts",
+    "./test/negative.ts",
     "./test/section3-2-1.ts",
     "./test/section3-2-2.ts",
     "./test/section3-2-3.ts",
