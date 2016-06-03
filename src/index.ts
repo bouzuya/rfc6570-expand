@@ -128,6 +128,48 @@ const varSpecToString = (
             }).join(',')))));
 };
 
+type Variable = string | string[] | [string, string][];
+type Variables = {
+  [key: string]: Variable;
+};
+
+const toString = (variable: any): string => {
+  if (typeof variable === 'undefined') return undefined;
+  if (variable === null) return undefined;
+  if (typeof variable === 'boolean') return String(variable);
+  if (typeof variable === 'number') return String(variable);
+  if (typeof variable === 'string') return variable;
+  if (typeof variable === 'function') return variable.toString();
+  return variable.toString();
+};
+
+const normalizeVariable = (variable: any): Variable => {
+  if (typeof variable === 'undefined') return undefined;
+  if (variable === null) return undefined;
+  if (typeof variable === 'boolean') return String(variable);
+  if (typeof variable === 'number') return String(variable);
+  if (typeof variable === 'string') return variable;
+  if (typeof variable === 'object') {
+    if (Array.isArray(variable)) {
+      return variable.map(toString);
+    } else {
+      return Object.keys(variable).map((key): [string, string] => {
+        return [key, toString(variable[key])];
+      });
+    }
+  }
+  if (typeof variable === 'function') return variable.toString(); // ?
+  return variable.toString();
+};
+
+const normalizeVariables = (variables: { [key: string]: any; }): Variables => {
+  return Object.keys(variables).map(key => {
+    return [key, normalizeVariable(variables[key])];
+  }).reduce((normalized: Variables, [key, value]: [string, string]) => {
+    return Object.assign(normalized, { [key]: value });
+  }, <Variables>{});
+};
+
 // s = '{...}'
 const expression = (s: string, variables: any): string => {
   const parser = expressionParser();
@@ -162,6 +204,7 @@ const literals = (s: string): string => {
 
 const init = (template: string): { expand: (variables: any) => string; } => {
   const expand = (variables: any): string => {
+    const normalized = normalizeVariables(variables);
     const result: string[] = [];
     let index = 0;
     while (true) {
@@ -181,7 +224,7 @@ const init = (template: string): { expand: (variables: any) => string; } => {
       result.push(
         expression(
           template.slice(openIndex, closeIndex + 1),
-          variables
+          normalized
         )
       );
 
