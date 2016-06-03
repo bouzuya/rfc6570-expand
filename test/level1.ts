@@ -9,7 +9,7 @@ tests.forEach(testCase => {
   test(`${section} - ${level} - ${template}`, resolve => {
     const { expand } = init(template);
     const uri = expand(variables);
-    assert(uris.some(u => u === uri), `${uri} / ${uris}`);
+    assert(uris.some(u => u === uri), `${template} / ${uris} / ${uri}`);
     resolve();
   });
 });
