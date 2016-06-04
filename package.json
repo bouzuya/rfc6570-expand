@@ -29,7 +29,13 @@
     "lib/"
   ],
   "homepage": "https://github.com/bouzuya/rfc6570-expand",
-  "keywords": [],
+  "keywords": [
+    "6570",
+    "RFC 6570",
+    "rfc",
+    "template",
+    "uri"
+  ],
   "license": "MIT",
   "main": "lib/index.js",
   "repository": {
