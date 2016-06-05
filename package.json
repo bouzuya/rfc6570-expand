@@ -45,11 +45,13 @@
     "url": "https://github.com/bouzuya/rfc6570-expand.git"
   },
   "scripts": {
-    "build": "tsc && ([ -d lib/ ] || mkdir -p lib/) && cp .tmp/src/* lib/",
+    "build": "tsc && npm run copy",
+    "copy": "([ -d lib/ ] || mkdir -p lib/) && cp .tmp/src/* lib/",
     "clean": "rm -rf .tmp/ lib/",
     "prepublish": "typings install && npm run build",
     "test": "eater",
-    "watch": "parallelshell 'npm run build -- --watch' 'npm run watch-test'",
+    "watch": "parallelshell 'tsc --watch' 'npm run watch-copy' 'npm run watch-test'",
+    "watch-copy": "watch --wait 2 'npm run copy' '.tmp/src/'",
     "watch-test": "watch --wait 2 'npm test' '.tmp/test/'"
   },
   "typings": "lib/index.d.ts"
