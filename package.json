@@ -49,7 +49,7 @@
   "scripts": {
     "build": "tsc && npm run copy",
     "clean": "rimraf .tmp lib",
-    "copy": "([ -d lib/ ] || mkdir -p lib/) && cp .tmp/src/* lib/",
+    "copy": "cpx '.tmp/src/*' 'lib/'",
     "prepublish": "typings install && npm run build",
     "test": "eater",
     "watch": "parallelshell 'tsc --watch' 'npm run watch-copy' 'npm run watch-test'",
