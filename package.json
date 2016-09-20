@@ -47,7 +47,7 @@
   },
   "scripts": {
     "build": "tsc && npm run copy",
-    "clean": "rm -rf .tmp/ lib/",
+    "clean": "rimraf .tmp lib",
     "copy": "([ -d lib/ ] || mkdir -p lib/) && cp .tmp/src/* lib/",
     "prepublish": "typings install && npm run build",
     "test": "eater",
