@@ -11,6 +11,7 @@
     "url": "https://github.com/bouzuya/rfc6570-expand/issues"
   },
   "devDependencies": {
+    "cpx": "1.5.0",
     "eater": "1.7.0",
     "eater-b-reporter": "0.2.0",
     "espower-loader": "1.0.0",
